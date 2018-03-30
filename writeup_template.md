@@ -1,5 +1,12 @@
 # **Traffic Sign Recognition** 
 
+Extra steps
+```
+pip install git+https://github.com/mwaskom/seaborn.git
+source activate carnd-term1
+jupyter notebook Traffic_Sign_Classifier.ipynb
+```
+
 ## Writeup
 
 ### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.

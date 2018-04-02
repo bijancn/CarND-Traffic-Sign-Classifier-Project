@@ -145,7 +145,7 @@ gives an accuracy of 80%. This is not as good as the performance on the
 test set (93.4 %) but also not statistically significant due to the
 small sample size.
 
-#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability.
+#### 3. Model certainty
 
 The top 5 softmax probabilities are computed with
 `tf.nn.top_k(tf.nn.softmax(logits), k=5)`. However, as it can be seen

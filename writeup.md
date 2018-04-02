@@ -1,7 +1,5 @@
 # **Traffic Sign Recognition**
 
-## Writeup
-
 [//]: # (Image References)
 
 [countplot]: ./countplot.png
@@ -13,7 +11,6 @@
 [image7]: stop.jpg "Traffic Sign 4"
 [image8]: straightright.jpg "Traffic Sign 5"
 
-## Rubric Points
 ### Data Set Summary & Exploration
 
 #### 1. Provide a basic summary of the data set
@@ -94,12 +91,13 @@ Softmax-Cross-Entropy. The mean of this is minimized by the optimizer.
 I used a learning rate of 0.001 with the `AdamOptimizer`. I set a
 maximal number of epochs to 50 with a batch size of 56.
 
-#### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+#### 4. Solution finding
 
 As a validation accuracy of at least 93 % was required, I decided to
 stop the optimization as soon as 95 % was reached.
 
-My final model results were:
+My final model results were, as it can be seen in the tensor flow session
+with the epochs:
 * validation set accuracy of 0.954
 * test set accuracy of 0.934
 
@@ -126,41 +124,54 @@ Here are five German traffic signs that I found on the web:
 ![alt text][image4] ![alt text][image5] ![alt text][image6]
 ![alt text][image7] ![alt text][image8]
 
-The first image might be difficult to classify because ...
+The signs should all be pretty easy to identify. Only the viewing angle
+varies otherwise they are clearly visible. Potentially problematic is
+the blue on blue of the straight-right, which offers little contrast.
 
-#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set
+#### 2. Model performance on the signs
 
 Here are the results of the prediction:
 
 | Image			        |     Prediction	        					|
 |:---------------------:|:---------------------------------------------:|
 | Stop Sign      		| Stop sign   									|
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| 30 km/h     			| 30 km/h 										|
+| 70 km/h					| 70 km/h											|
+| No passing	      		| No passing					 				|
+| Straight-Right			| Roundabout mandatory     							|
 
+The model was able to correctly guess 4 of the 5 traffic signs, which
+gives an accuracy of 80%. This is not as good as the performance on the
+test set (93.4 %) but also not statistically significant due to the
+small sample size.
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability.
 
-#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
+The top 5 softmax probabilities are computed with
+`tf.nn.top_k(tf.nn.softmax(logits), k=5)`. However, as it can be seen
+from the values of `logits` this is almost pointless as all of the
+images have one `logit > 500`, leading to giant numbers when
+exponentiated. Thus, all "probabilities" are extremely close to one.
+However, I do not understand why the applying the softmax function
+actually gives a probability as I could have used plenty of other
+functions that normalizes to a number between 0 and 1. The softmax
+function does not work with logits that large. The other question is
+obviously why the logits are so large, which I cannot explain.
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
+The candidates are
+```
+[14,  5,  1,  0, 13]
+[ 9, 41, 35, 40, 16]
+[ 4, 37,  1, 40, 18]
+[ 1,  6,  2, 38,  5]
+[40,  1, 36, 41, 13]
+```
+Thus the straight-right (36) is not only mistaken for a roundabout (40,
+also white arrows on blue round sign) but also lands behind Speed limit
+(30km/h) (1), which looks quite differently.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
-
-| Probability         	|     Prediction	        					|
-|:---------------------:|:---------------------------------------------:|
-| .60         			| Stop sign   									|
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
-
-
-For the second image ...
-
-### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-#### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
-
-
+As mentioned in the preprocessing, for a more robust classifier we
+should add more augmented data. Furthermore, the architecture is just
+what I ended up with but can of course be improved by adding layers.
+Especially, a drop-out might avoid the overfitting that is likely
+indicated by the big logits.

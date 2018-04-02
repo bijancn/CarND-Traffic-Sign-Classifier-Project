@@ -1,4 +1,4 @@
-# **Traffic Sign Recognition** 
+# **Traffic Sign Recognition**
 
 ## Writeup
 
@@ -7,11 +7,11 @@
 [countplot]: ./countplot.png
 [distplot]: ./distplot.png
 [image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[image4]: 30.jpg "Traffic Sign 1"
+[image5]: 70.jpg "Traffic Sign 2"
+[image6]: nopassing.jpg "Traffic Sign 3"
+[image7]: stop.jpg "Traffic Sign 4"
+[image8]: straightright.jpg "Traffic Sign 5"
 
 ## Rubric Points
 ### Data Set Summary & Exploration
@@ -48,72 +48,82 @@ likely to classify a frequent class.
 
 ### Design and Test a Model Architecture
 
-#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
+#### 1. Preprocessing
 
-As a first step, I decided to convert the images to grayscale because ...
+To roughly normalize the mean and variance of the images, I subtract the
+mean and divide by the mean in the normalize step. I am not sure if this
+is ideal for testing single images like we do in the last step but in
+the training, test and validation sets I found that their mean is closer
+to 80 than 128.
 
-As a last step, I normalized the image data because ...
+I thought about using grayscale but I refrained from it as it is
+counterintuitive for me to disregard the color information for German
+traffic signs where color is in general relevant.
 
-I decided to generate additional data because ... 
+Finally, I shuffled the data and the labels. This, of course, only
+affects the training but not the validation and test.
 
-To add more data to the the data set, I used the following techniques because ... 
+#### 2. Model architecture
 
-Here is an example of an original image and an augmented image:
+My final model is almost identical to LeNet. It consists of the
+following layers:
 
-![alt text][image3]
+| Layer                 |     Description                             |
+|:---------------------:|:---------------------------------------------:|
+| Input                 | 32x32x3 RGB image                           |
+| Convolution 5x5       | 1x1 stride, valid padding, outputs 28x28x6  |
+| RELU activation       |                                             |
+| Max pooling           | 2x2 stride, valid padding, outputs 14x14x6  |
+| Convolution 5x5       | 1x1 stride, valid padding, outputs 10x10x32 |
+| RELU activation       |                                             |
+| Max pooling           | 2x2 stride, valid padding, outputs 5x5x32   |
+| Flatten               | outputs 800                                 |
+| Fully connected       | outputs 120                                 |
+| RELU activation       |                                             |
+| Fully connected       | outputs 43                                  |
+| Softmax               | etc.                                        |
 
-The difference between the original data set and the augmented data set is the following ... 
+As an experiment, I increased the shape of the randomly selected values
+form 16 to 32 in the second convolution layer, which gave me a slight
+improvement of 1-2 %.
 
+#### 3. Training
 
-#### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
-
-My final model consisted of the following layers:
-
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
- 
-
-
-#### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
-
-To train the model, I used an ....
+The logits from the LeNet type architecture are used to compute the
+Softmax-Cross-Entropy. The mean of this is minimized by the optimizer.
+I used a learning rate of 0.001 with the `AdamOptimizer`. I set a
+maximal number of epochs to 50 with a batch size of 56.
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
+As a validation accuracy of at least 93 % was required, I decided to
+stop the optimization as soon as 95 % was reached.
+
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ? 
-* test set accuracy of ?
+* validation set accuracy of 0.954
+* test set accuracy of 0.934
 
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+As a starting point, I simply copied the LeNet solution as classifying
+numbers should not be too different from classifying traffic signs and
+it was already introduced in the lectures.
 
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
+This gave me already a decent performance of ~85%. The first
+hyperparameter I experimented with were epochs and batch sizes. Higher
+batch sizes (512) did not improve the learning so I settled with 56.
+I went with the epochs to up to 50 but this gave little improvements
+over about 25. Finally, I adapted one of the dimension of the
+convolution as noted above to reach the quoted accuracies.
+
+The different type of convolutions seem to help to identify features at
+different scales.
 
 ### Test a Model on New Images
 
-#### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
+#### 1. Five German traffic signs found on the web
 
 Here are five German traffic signs that I found on the web:
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
+![alt text][image4] ![alt text][image5] ![alt text][image6]
 ![alt text][image7] ![alt text][image8]
 
 The first image might be difficult to classify because ...
@@ -122,9 +132,9 @@ The first image might be difficult to classify because ...
 
 Here are the results of the prediction:
 
-| Image			        |     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
+| Image			        |     Prediction	        					|
+|:---------------------:|:---------------------------------------------:|
+| Stop Sign      		| Stop sign   									|
 | U-turn     			| U-turn 										|
 | Yield					| Yield											|
 | 100 km/h	      		| Bumpy Road					 				|
@@ -139,16 +149,16 @@ The code for making predictions on my final model is located in the 11th cell of
 
 For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
 
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
+| Probability         	|     Prediction	        					|
+|:---------------------:|:---------------------------------------------:|
+| .60         			| Stop sign   									|
 | .20     				| U-turn 										|
 | .05					| Yield											|
 | .04	      			| Bumpy Road					 				|
 | .01				    | Slippery Road      							|
 
 
-For the second image ... 
+For the second image ...
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?

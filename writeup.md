@@ -16,26 +16,39 @@
 ## Rubric Points
 ### Data Set Summary & Exploration
 
-#### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
-
-I used the pandas library to calculate summary statistics of the traffic
+#### 1. Provide a basic summary of the data set
+I used plain Python to calculate summary statistics of the traffic
 signs data set:
 
-* The size of training set is ?
-* The size of the validation set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+* The size of training set is 34799
+* The size of the validation set is 4410
+* The size of test set is 12630
+* The shape of a traffic sign image is 32x32
+* The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
+I used Seaborn to get the distribution of images across the
+different traffic sign classes:
 
-![alt text][image1]
+![countplot][countplot]
+
+The basic count plot above shows that the samples are far from
+equidistributed. Therefore, training might overfit towards those signs
+that are more often represented. For a general classifier, we should
+thus augment the data by adding rotated or shifted images of the rare
+classes.
+
+However, as we can see from the dist plot below, the distribution is
+roughly the same across training, validation and test sets. Thus, the
+overfitting might actually help for these specific sets as it is more
+likely to classify a frequent class.
+
+![distplot][distplot]
 
 ### Design and Test a Model Architecture
 
-#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
+#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
 
 As a first step, I decided to convert the images to grayscale because ...
 
@@ -109,7 +122,7 @@ Here are five German traffic signs that I found on the web:
 
 The first image might be difficult to classify because ...
 
-#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
+#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set
 
 Here are the results of the prediction:
 
